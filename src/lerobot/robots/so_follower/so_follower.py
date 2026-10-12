@@ -138,8 +138,7 @@ class SOFollower(Robot):
         # own travel. A joint that does spin records very nearly 0-4095 by itself.
         print(
             "Move all joints sequentially through their entire ranges of motion.\n"
-            "Turn 'wrist_roll' as far as it goes both ways: a full revolution if it spins "
-            "freely, stop to stop if it does not.\nRecording positions. Press ENTER to stop..."
+            "Recording positions. Press ENTER to stop..."
         )
         range_mins, range_maxes = self.bus.record_ranges_of_motion()
 
