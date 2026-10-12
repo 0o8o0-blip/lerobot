@@ -100,15 +100,17 @@ class SOLeader(Teleoperator):
         input(f"Move {self} to the middle of its range of motion and press ENTER....")
         homing_offsets = self.bus.set_half_turn_homings()
 
-        full_turn_motor = "wrist_roll"
-        unknown_range_motors = [motor for motor in self.bus.motors if motor != full_turn_motor]
+        # Sweep `wrist_roll` too, instead of assigning it 0-4095 on the assumption that it
+        # spins freely. The normalized zero is the midpoint of range_min/range_max, so that
+        # assignment zeroed this one joint on the middle of the encoder - wherever the
+        # operator held it at ENTER - while every swept joint is zeroed on the middle of its
+        # own travel. A joint that does spin records very nearly 0-4095 by itself.
         print(
-            f"Move all joints except '{full_turn_motor}' sequentially through their "
-            "entire ranges of motion.\nRecording positions. Press ENTER to stop..."
+            "Move all joints sequentially through their entire ranges of motion.\n"
+            "Turn 'wrist_roll' as far as it goes both ways: a full revolution if it spins "
+            "freely, stop to stop if it does not.\nRecording positions. Press ENTER to stop..."
         )
-        range_mins, range_maxes = self.bus.record_ranges_of_motion(unknown_range_motors)
-        range_mins[full_turn_motor] = 0
-        range_maxes[full_turn_motor] = 4095
+        range_mins, range_maxes = self.bus.record_ranges_of_motion()
 
         self.calibration = {}
         for motor, m in self.bus.motors.items():
